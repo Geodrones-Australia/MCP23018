@@ -17,12 +17,12 @@ Distributed as-is; no warranty is given.
 
 #include <Arduino.h>
 #include <MCP23018.h>
-#include <Wire.h>
 
-MCP23018::MCP23018(int _ADR)
+
+MCP23018::MCP23018(int _ADR, TwoWire &wire)
 {
   // ADR = _ADR; //FIX ADR!
-  Wire.begin();  
+  _wire = &wire; 
 }
 
 
@@ -32,8 +32,8 @@ int MCP23018::begin(void)  //FIX! Combine interrupt lines be default!
   PinModeConf[0] = 0xFF; //Default to all inputs //FIX make cleaner
   PinModeConf[1] = 0xFF; 
 
-  Wire.beginTransmission(ADR); //Test if device present 
-  if(Wire.endTransmission() != 0) return -1;
+  _wire->beginTransmission(ADR); //Test if device present 
+  if(_wire->endTransmission() != 0) return -1;
   else return 1;
 }
 
@@ -148,58 +148,58 @@ int MCP23018::SetInterrupt(int Pin, bool State, bool Port)
 
 int MCP23018::SetPort(int Config, bool Port) 
 {
-  Wire.beginTransmission(ADR); // transmit to device with address ADR
-  Wire.write(LATA + Port);   //Send to output set register
-  Wire.write(Config);   
+  _wire->beginTransmission(ADR); // transmit to device with address ADR
+  _wire->write(LATA + Port);   //Send to output set register
+  _wire->write(Config);   
   // Serial.println(LATA + Port, HEX); //DEBUG!
   // Serial.println(Config, HEX); //DEBUG!
   // Serial.print("\n\n"); //DEBUG!
-  return Wire.endTransmission();
+  return _wire->endTransmission();
 }
 
 int MCP23018::SetDirection(int Config, bool Port) 
 {
   // Serial.println(Config, HEX); //DEBUG!
-  Wire.beginTransmission(ADR); // transmit to device with address ADR
-  Wire.write(DIRA + Port);        //Send to port configuration register
-  Wire.write(Config);              
+  _wire->beginTransmission(ADR); // transmit to device with address ADR
+  _wire->write(DIRA + Port);        //Send to port configuration register
+  _wire->write(Config);              
   // Serial.println(DIRA + Port, HEX); //DEBUG!
   // Serial.print("\n\n"); //DEBUG!
-  return Wire.endTransmission();    // stop transmitting
+  return _wire->endTransmission();    // stop transmitting
 }
 
 int MCP23018::SetPolarity(int Config, bool Port) 
 {
-  Wire.beginTransmission(ADR); // transmit to device with address ADR
-  Wire.write(POLA + Port);        //Send to port configuration register
-  Wire.write(Config);              
-  return Wire.endTransmission();    // stop transmitting
+  _wire->beginTransmission(ADR); // transmit to device with address ADR
+  _wire->write(POLA + Port);        //Send to port configuration register
+  _wire->write(Config);              
+  return _wire->endTransmission();    // stop transmitting
 }
 
 int MCP23018::SetPullup(int Config, bool Port) 
 {
   // Serial.println(Config, HEX); //DEBUG!
-  Wire.beginTransmission(ADR); // transmit to device with address ADR
-  Wire.write(PULLUPA + Port);        //Send to port configuration register
-  Wire.write(Config);         
-  return Wire.endTransmission();    // stop transmitting
+  _wire->beginTransmission(ADR); // transmit to device with address ADR
+  _wire->write(PULLUPA + Port);        //Send to port configuration register
+  _wire->write(Config);         
+  return _wire->endTransmission();    // stop transmitting
 }
 
 int MCP23018::SetInt(int Config, bool Port) 
 {
-  Wire.beginTransmission(ADR); // transmit to device with address ADR
-  Wire.write(PULLUPA + Port);        //Send to port configuration register
-  Wire.write(Config);         
-  return Wire.endTransmission();    // stop transmitting
+  _wire->beginTransmission(ADR); // transmit to device with address ADR
+  _wire->write(PULLUPA + Port);        //Send to port configuration register
+  _wire->write(Config);         
+  return _wire->endTransmission();    // stop transmitting
 }
 
 //IN DEVELOPMENT
 int MCP23018::ReadPort(int Config, bool Port)
 {
-  Wire.beginTransmission(ADR); // transmit to device with address ADR
-  Wire.write(0x01);        //Send to port configuration register
-  Wire.write(Config);              //Set port 1-4 as OUTPUT, all others as inputs
-  return Wire.endTransmission();    // stop transmitting
+  _wire->beginTransmission(ADR); // transmit to device with address ADR
+  _wire->write(0x01);        //Send to port configuration register
+  _wire->write(Config);              //Set port 1-4 as OUTPUT, all others as inputs
+  return _wire->endTransmission();    // stop transmitting
 }
 
 

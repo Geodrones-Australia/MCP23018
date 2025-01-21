@@ -19,6 +19,7 @@ Distributed as-is; no warranty is given.
 #define MCP23018_h
 
 #include "Arduino.h"
+#include "Wire.h"
 
 #define ON 1
 #define OFF 0
@@ -62,13 +63,14 @@ class MCP23018
     // };
 
   public:
-    MCP23018(int _ADR);
+    MCP23018(int _ADR, TwoWire &wire);
     int begin(void);
     int PinMode(int Pin, uint8_t State, bool Port);
     int DigitalWrite(int Pin, bool State, bool Port);
     int SetInterrupt(int Pin, bool State, bool Port);
 
   private:
+    TwoWire *_wire;
     const int ADR = BASE_ADR; //FIX! Replace with equation later
   	uint8_t PinModeConf[2] = {0xFF}; //All pins natively inputs
     uint8_t PortState[2] = {0}; //All pins natively off

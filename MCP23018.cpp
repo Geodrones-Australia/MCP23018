@@ -41,13 +41,10 @@ int MCP23018::begin(void)  //FIX! Combine interrupt lines be default!
 }
 
 bool MCP23018::scan() {
-    // Scan I2C bus
+  // Scan I2C bus
   HAL_StatusTypeDef error;
 
-  // The i2c_scanner uses the return value of
-  // the Write.endTransmisstion to see if
-  // a device did acknowledge to the address.
-  // Decrease timeout to minimum value
+  // Check if device is active on the bus
   error = HAL_I2C_IsDeviceReady(_wire->getHandle(),(uint16_t)ADR << 1, 1, 1);
 
   if (error == HAL_OK)

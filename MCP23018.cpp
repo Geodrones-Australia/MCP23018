@@ -19,9 +19,11 @@ Distributed as-is; no warranty is given.
 #include <MCP23018.h>
 
 
+const uint8_t I2C_MCP23018 = B0100000;
+
 MCP23018::MCP23018(int _ADR, TwoWire &wire)
 {
-  // ADR = _ADR; //FIX ADR!
+  ADR = _ADR; // 0x20 - 0x27
   _wire = &wire; 
 }
 
@@ -32,11 +34,31 @@ int MCP23018::begin(void)  //FIX! Combine interrupt lines be default!
   PinModeConf[0] = 0xFF; //Default to all inputs //FIX make cleaner
   PinModeConf[1] = 0xFF; 
 
-  _wire->beginTransmission(ADR); //Test if device present 
-  if(_wire->endTransmission() != 0) return -1;
-  else return 1;
+  if (!scan()) {
+    return 0;
+  } else 
+  return 1;
 }
 
+bool MCP23018::scan() {
+    // Scan I2C bus
+  HAL_StatusTypeDef error;
+
+  // The i2c_scanner uses the return value of
+  // the Write.endTransmisstion to see if
+  // a device did acknowledge to the address.
+  // Decrease timeout to minimum value
+  error = HAL_I2C_IsDeviceReady(_wire->getHandle(),(uint16_t)ADR << 1, 1, 1);
+
+  if (error == HAL_OK)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  } 
+}
 
 int MCP23018::PinMode(int Pin, uint8_t PinType, bool Port)
 {

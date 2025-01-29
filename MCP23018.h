@@ -65,13 +65,14 @@ class MCP23018
   public:
     MCP23018(int _ADR, TwoWire &wire);
     int begin(void);
+    bool scan();
     int PinMode(int Pin, uint8_t State, bool Port);
     int DigitalWrite(int Pin, bool State, bool Port);
     int SetInterrupt(int Pin, bool State, bool Port);
 
   private:
     TwoWire *_wire;
-    const int ADR = BASE_ADR; //FIX! Replace with equation later
+    int ADR = BASE_ADR; //FIX! Replace with equation later
   	uint8_t PinModeConf[2] = {0xFF}; //All pins natively inputs
     uint8_t PortState[2] = {0}; //All pins natively off
     // uint8_t PortAState = 0x00; //All pins natively off
